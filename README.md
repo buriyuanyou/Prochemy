@@ -128,13 +128,3 @@ python run_python_testcases_avatar.py
 ```
 
 ​    This will generate the pass@1 value for the code translation task, as well as the ratio of passed test cases to the total number of test cases. The same applies to the python2java  translation using   `evaluate_prompt_python2java.py` and `run_java_testcases_avatar.py` .
-
-
-
-### 📌 Notes
-
-​    It is worth noting that the models used for mutation and evaluation do not necessarily have to be the same. Considering time and cost factors, you can assign different models for these two processes.
-
-#### 💡Tips for Usage
-
-​    The size of the generated training set and the number of prompts produced in each iteration can have a certain impact on the performance of Prochemy. There exists a trade-off between cost and performance. In the paper, the training set includes 10 data points from each of three sources, and 10 prompts are generated per iteration. You can adjust these parameters as needed.
