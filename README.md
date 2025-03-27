@@ -19,13 +19,13 @@ Generation
 ​    Use the following instructions to automatically generate training dataset using a large language model, as described in Section 2.2 of the paper.  `--output_path` parameter is used to specify the file output path.
 
 ```python
-python 0_train_set_generate.py --output_path=
+python 0_train_set_generate.py --output_path
 ```
 
 ​    Run the `train_set_postprocessing.py` script in the `code_generation/utils` directory to post-process the generated results.
 
 ```python
-python train_set_postprocessing --file_path=
+python train_set_postprocessing --file_path
 ```
 
 ​    The following instructions are used to randomly extract data from existing datasets:
