@@ -28,8 +28,6 @@ python 0_train_set_generate.py --output_path=
 python train_set_postprocessing --file_path=
 ```
 
-​    
-
 ​    The following instructions are used to randomly extract data from existing datasets:
 
 ```
@@ -37,7 +35,6 @@ python 0_train_set_select.py --input  --output  --sample_size
 ```
 
 ​    The `--input` parameter specifies the input file path, the `--output` parameter specifies the output file path, and the `--sample_size` parameter represents the number of data samples to be extracted.
-
 
 
 #### 1. Prompt Mutation.
