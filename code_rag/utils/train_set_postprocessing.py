@@ -1,55 +1,57 @@
 import json
-import re
 import argparse
 
 
-# Function to clean escape characters
-def clean_escape_characters(text):
-    # Replace all double backslashes with single backslash
-    text = text.replace('\\\\', '\\')
-    # Remove any unnecessary escape sequences
-    text = text.replace('\\n', '\n')
-    text = text.replace('\\t', '\t')
-    # Handle escaped quotes properly
-    text = text.replace('\\"', '"')
-    return text
+def clean_text(obj):
+    if isinstance(obj, str):
+        return (
+            obj.replace('\\\\', '\\')
+               .replace('\\n', '\n')
+               .replace('\\t', '\t')
+               .replace('\\"', '"')
+        )
+    elif isinstance(obj, list):
+        return [clean_text(x) for x in obj]
+    elif isinstance(obj, dict):
+        return {k: clean_text(v) for k, v in obj.items()}
+    else:
+        return obj
 
 
-# Function to process the file
-def process_file(file_path):
-    # Read the JSONL file and load each line as a JSON object
-    with open(file_path, 'r') as file:
-        data = [json.loads(line) for line in file]
+def process_file(file_path, output_path):
+    # Robust read (mixed encodings)
+    with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+        data = [json.loads(line) for line in f]
 
-    # Modify each entry
     for i, entry in enumerate(data):
-        # Update task_id
         entry['task_id'] = f"auto/{i}"
 
-        # Clean the 'prompt', 'canonical_solution', and 'test' fields
         if 'prompt' in entry:
-            entry['prompt'] = clean_escape_characters(entry['prompt'])
-        if 'canonical_solution' in entry:
-            entry['canonical_solution'] = clean_escape_characters(entry['canonical_solution'])
-        if 'test' in entry:
-            entry['test'] = clean_escape_characters(entry['test'])
+            entry['prompt'] = clean_text(entry['prompt'])
 
-    # Write the modified data back to the JSONL file
-    with open(file_path, 'w') as file:
+        if 'right_context' in entry:
+            entry['right_context'] = clean_text(entry['right_context'])
+
+        if 'groundtruth' in entry:
+            entry['groundtruth'] = clean_text(entry['groundtruth'])
+
+        if 'crossfile_context' in entry:
+            entry['crossfile_context'] = clean_text(entry['crossfile_context'])
+
+        # metadata intentionally untouched
+
+    # Write to NEW file (safe)
+    with open(output_path, 'w', encoding='utf-8') as f:
         for entry in data:
-            # Write each entry back with the appropriate formatting
-            file.write(json.dumps(entry, ensure_ascii=False) + '\n')
+            f.write(json.dumps(entry, ensure_ascii=False) + '\n')
 
-    print(f"File {file_path} has been successfully updated with cleaned entries and new task IDs.")
+    print(f"Cleaned file written to: {output_path}")
 
 
 if __name__ == "__main__":
-    # Set up argument parser
-    parser = argparse.ArgumentParser(description="Process and clean a JSONL file with task data.")
-    parser.add_argument('--file_path', type=str, required=True, help="The file path for the JSONL file to process.")
-
-    # Parse the arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--file_path', type=str, required=True)
+    parser.add_argument('--output_path', type=str, required=True)
     args = parser.parse_args()
 
-    # Call the processing function with the provided file path
-    process_file(args.file_path)
+    process_file(args.file_path, args.output_path)
